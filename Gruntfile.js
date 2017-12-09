@@ -6,13 +6,14 @@ module.exports = function (grunt) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		copy: {
-			html: {
+			index: {
 				files: [{
 						expand: true,
 						flatten: true,
+						isFile: true,
 						cwd: ".",
-						src: ["src/html/*"],
-						dest: "build/"
+						src: ["dist/noinfopath-schedule.min.js"],
+						dest: "./index.js"
 					}]
 			}
 		},
@@ -37,6 +38,7 @@ module.exports = function (grunt) {
 			dist: {
 				files: {
 					'dist/noinfopath-schedule.js': ['src/*.js']
+
 				},
 				options: {}
 			}

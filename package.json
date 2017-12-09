@@ -1,13 +1,13 @@
 {
   "name": "noinfopath-scheduler",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/noinfopath-schedule.min.js",
   "dependencies": {
     "bluebird": "^3.5.1",
     "moment": "^2.19.3"
   },
   "devDependencies": {
-    "grunt": "^1.0.1",
+    "grunt": "^1.0.2",
     "grunt-browserify": "^5.2.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-uglify": "^3.2.1",
