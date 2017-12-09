@@ -4607,7 +4607,7 @@ module.exports = (function () {
 			if (typeof (name) === "string" && typeof (schedule) === "object" && typeof (jobFn) === "function") {
 				task = isAlarm ? new NoAlarmTask(name, schedule, jobFn) : new NoCronTask(name, schedule, jobFn);
 			} else if (typeof (name) === "object" && typeof (schedule) === "function") {
-				task = name.type === "NoAlarmJob" ? new NoAlarmTask(name.name, name.schedule, schedule) : new NoCronTask(name.name, name.schedule, schedule);
+				task = name.type === "alarm" ? new NoAlarmTask(name.name, name.schedule, schedule) : new NoCronTask(name.name, name.schedule, schedule);
 			}
 
 

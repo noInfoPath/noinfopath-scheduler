@@ -36,7 +36,7 @@ var _24HOURS = 1000 * 60 * 60 * 24,
 		{
 			"name": "exact-time-test",
 			"description": "Executes a task at an exact time of day in military time. (plus or minus a few seconds)",
-			"type": "NoAlarmJob",
+			"type": "alarm",
 			"schedule": {
 				"time": "07:37"
 			},
@@ -47,7 +47,7 @@ var _24HOURS = 1000 * 60 * 60 * 24,
 		{
 			"name": "missed-exact-time-test",
 			"description": "Executes a task at an exact time of day in military time. (plus or minus a few seconds)",
-			"type": "NoAlarmJob",
+			"type": "alarm",
 			"schedule": {
 				"time": "07:37"
 			},
@@ -58,7 +58,7 @@ var _24HOURS = 1000 * 60 * 60 * 24,
 		{
 			"name": "exact-weekday-time-test",
 			"description": "Executes a task at an exact time of day in military time. (plus or minus a few seconds)",
-			"type": "NoAlarmJob",
+			"type": "alarm",
 			"schedule": {
 				"weekday": "saturday",
 				"time": "07:37"
@@ -69,7 +69,7 @@ var _24HOURS = 1000 * 60 * 60 * 24,
 		},{
 			"name": "not-exact-weekday-time-test",
 			"description": "Executes a task at an exact time of day in military time. (plus or minus a few seconds)",
-			"type": "NoAlarmJob",
+			"type": "alarm",
 			"schedule": {
 				"weekday": "tuesday",
 				"time": "07:37"
