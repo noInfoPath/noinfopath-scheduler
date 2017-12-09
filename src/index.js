@@ -19,7 +19,7 @@ module.exports = (function () {
 			if (task instanceof NoCronTask)
 				console.log("Scheduled %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
 			else
-				console.log("Scheduled %s to every day at %s", task._name, task._schedule.time);
+				console.log("Scheduled %s to every day at %s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
 
 			_tasks.push(task);
 

@@ -54,6 +54,29 @@ var _24HOURS = 1000 * 60 * 60 * 24,
 			"module": "./mocks/task",
 			"method": "run",
 			"params": []
+		},
+		{
+			"name": "exact-weekday-time-test",
+			"description": "Executes a task at an exact time of day in military time. (plus or minus a few seconds)",
+			"type": "NoAlarmJob",
+			"schedule": {
+				"weekday": "saturday",
+				"time": "07:37"
+			},
+			"module": "./mocks/task",
+			"method": "run",
+			"params": []
+		},{
+			"name": "not-exact-weekday-time-test",
+			"description": "Executes a task at an exact time of day in military time. (plus or minus a few seconds)",
+			"type": "NoAlarmJob",
+			"schedule": {
+				"weekday": "tuesday",
+				"time": "07:37"
+			},
+			"module": "./mocks/task",
+			"method": "run",
+			"params": []
 		}]
 	},
 	job;
@@ -94,8 +117,10 @@ config.jobs.forEach(function (job, i) {
 	} else if(job.name === "missed-exact-time-test") {
 		job.schedule.time = _pad(now.getHours(), 2, "0") + ":" + _pad(_fixMins(now.getMinutes(), -1), 2, "0")
 		noCron.addSchedule(job, method);
+	} else if(job.name === "exact-weekday-time-test" || job.name === "not-exact-weekday-time-test"){
+		job.schedule.time = _pad(now.getHours(), 2, "0") + ":" + _pad(_fixMins(now.getMinutes(), 1), 2, "0")
+		noCron.addSchedule(job, method);
 	} else {
-
 		noCron.addSchedule(job, method);
 	}
 });

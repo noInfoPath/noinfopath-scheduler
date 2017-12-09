@@ -35,7 +35,8 @@ module.exports = (function () {
 			var _now = moment(),
 				_target = moment("2017-01-01 " + schedule.time),
 				_margin = _now - (this._lastRun ? moment(this._lastRun) : moment()),
-				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute();
+				_isWeekday = schedule.weekday ? _now.format("dddd").toLowerCase() === schedule.weekday.toLowerCase() : true,
+				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute() && _isWeekday;
 
 			if (_alarm && !this._running && (_margin === 0 || _margin > 60000)) {
 				this.message = "Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");

@@ -4553,7 +4553,8 @@ module.exports = (function () {
 			var _now = moment(),
 				_target = moment("2017-01-01 " + schedule.time),
 				_margin = _now - (this._lastRun ? moment(this._lastRun) : moment()),
-				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute();
+				_isWeekday = schedule.weekday ? _now.format("dddd").toLowerCase() === schedule.weekday.toLowerCase() : true,
+				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute() && _isWeekday;
 
 			if (_alarm && !this._running && (_margin === 0 || _margin > 60000)) {
 				this.message = "Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
@@ -4613,7 +4614,7 @@ module.exports = (function () {
 			if (task instanceof NoCronTask)
 				console.log("Scheduled %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
 			else
-				console.log("Scheduled %s to every day at %s", task._name, task._schedule.time);
+				console.log("Scheduled %s to every day at %s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
 
 			_tasks.push(task);
 
