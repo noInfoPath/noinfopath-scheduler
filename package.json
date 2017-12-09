@@ -1,0 +1,34 @@
+{
+  "name": "noinfopath-scheduler",
+  "version": "1.0.0",
+  "main": "index.js",
+  "dependencies": {
+    "bluebird": "^3.5.1",
+    "moment": "^2.19.3"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.2.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-uglify": "^3.2.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-nodocs": "^1.0.7"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "gochinj",
+  "license": "MIT",
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noInfoPath/noinfopath-scheduler.git"
+  },
+  "bugs": {
+    "url": "https://github.com/noInfoPath/noinfopath-scheduler/issues"
+  },
+  "homepage": "https://github.com/noInfoPath/noinfopath-scheduler#readme",
+  "description": ""
+}
