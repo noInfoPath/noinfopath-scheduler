@@ -3,7 +3,7 @@ var moment = require("moment");
 module.exports = (function () {
 
 	function NoAlertJob(name, schedule, jobFn) {
-		if (typeof (schedule) !== "object") throw new Error("`schedule` is a required parameter");
+		if (typeof (schedule) !== "object") throw new Error("[NoAlarmTask] `schedule` is a required parameter");
 
 		function properties(obj) {
 			var out = {};
@@ -39,7 +39,7 @@ module.exports = (function () {
 				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute() && _isWeekday;
 
 			if (_alarm && !this._running && (_margin === 0 || _margin > 60000)) {
-				this.message = "Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
+				this.message = "[NoAlarmTask] Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
 				console.log(_margin, _now, this._running, this.message);
 
 				var r = this._jobFn();
@@ -49,7 +49,7 @@ module.exports = (function () {
 					this.promise = r.then(function () {
 							this._lastRun = moment(new Date()); //move this to after successful run.
 							this._running = false;
-							console.log("Ran " + this._name);
+							console.log("[NoAlarmTask] Ran " + this._name);
 						}.bind(this))
 						.catch(function (err) {
 							this._running = false;
@@ -60,7 +60,7 @@ module.exports = (function () {
 				} else {
 					this.promise = null;
 					this.skipped = true;
-					this.message = _name + " not run";
+					this.message = '[NoAlarmTask] ' + _name + " not run";
 				}
 			} else {
 				this.promise = null;

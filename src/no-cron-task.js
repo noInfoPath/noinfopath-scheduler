@@ -3,7 +3,7 @@ var moment = require("moment");
 module.exports = (function () {
 
 	function NoCronJob(name, schedule, jobFn) {
-		if (typeof (schedule) !== "object") throw new Error("`schedule` is a required parameter");
+		if (typeof (schedule) !== "object") throw new Error("[NoCronTask] `schedule` is a required parameter");
 
 		function properties(obj) {
 			var out = {};
@@ -44,7 +44,7 @@ module.exports = (function () {
 			// };
 
 			if (diff >= this._duration && !this._running) {
-				this.message = "Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
+				this.message = "[NoCronTask] Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
 
 				var r = this._jobFn();
 				this._running = true;
@@ -54,7 +54,7 @@ module.exports = (function () {
 					this.promise = r.then(function () {
 							this._lastRun = moment(new Date()); //move this to after successful run.
 							this._running = false;
-							console.log("Ran " + this._name + ", next check in " + this._duration.humanize());
+							console.log("[NoCronTask] Ran " + this._name + ", next check in " + this._duration.humanize());
 						}.bind(this))
 						.catch(function (err) {
 							this._running = false;
@@ -65,7 +65,7 @@ module.exports = (function () {
 				} else {
 					this.promise = null;
 					this.skipped = true;
-					this.message = _name + " not run, next check in " + _duration.humanize();
+					this.message = '[NoCronTask] ' + _name + " not run, next check in " + _duration.humanize();
 				}
 			} else {
 				this.promise = null;

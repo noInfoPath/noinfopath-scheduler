@@ -1,6 +1,11 @@
-var child_process = require("child_process")
-;
-console.log("Spawner loaded.");
+
+/*
+ * Mock to simulate a task that spawns child process (fork-task.js)
+ */
+
+
+var child_process = require("child_process");
+console.log("[spawner] Spawner loaded.");
 function _spawn() {
 	try {
 		var file = __dirname + "/fork-task.js";
@@ -8,7 +13,7 @@ function _spawn() {
 		enqueueProcess = child_process.fork(file);
 
 		enqueueProcess.on("close", function () {
-			console.log("Spawned task has finished running.");
+			console.log("[spawner] Spawned task has finished running.");
 		});
 
 		return Promise.resolve(true);

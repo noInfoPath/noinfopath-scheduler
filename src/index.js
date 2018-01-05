@@ -17,15 +17,41 @@ module.exports = (function () {
 
 
 			if (task instanceof NoCronTask)
-				console.log("Scheduled %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
+				console.log("[addSchedule] Scheduled as NoCronTask, %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
 			else
-				console.log("Scheduled %s to every day at %s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
+				console.log("[addSchedule] Scheduled as NoAlarmTask, %s to every day at %s%s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
 
 			_tasks.push(task);
 
 			// if(startNow) task.run();
 
 			return task;
+		}
+
+		/**
+		 * Removes job from the task scheduler.
+		 * It will remove all the jobs with the matching name.
+		 * @param {string} name Name of the job to remove.
+		 * @return {undefined}
+		 */
+		this.removeSchedule = function (name) {
+			_tasks = _tasks.filter(function (el) {
+				if (el._name == name) {
+					console.log('[index] Removing task %s', name);
+					if (el._running) {
+						console.log('[index] Notice: task we are removing is running at the moment.');
+					}
+				}
+				return el._name !== name;
+			});
+		}
+
+		/**
+		 * Returns array of jobs currently in the scheduler.
+		 * @return {array}
+		 */
+		this.getSchedules = function () {
+			return _tasks;
 		}
 
 		function _tick() {
