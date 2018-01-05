@@ -10,7 +10,7 @@ console.log("[fork-task] Fork-task loaded.");
 
 function runner() {
 	if(c === 0 ) {
-		if(fs.exists("./test/temp/running.txt")) {
+		if(fs.existsSync("./test/temp/running.txt")) {
 			console.log("[fork-task] Test run already in progress. Not starting again.");
 			return; //Don't run.
 		} else {
