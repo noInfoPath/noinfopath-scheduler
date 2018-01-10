@@ -47,6 +47,15 @@ module.exports = (function () {
 		}
 
 		/**
+		 * Removes all jobs from the schedule.
+		 */
+		this.removeAllSchedules = function () {
+			while (_tasks.length) {
+				this.removeSchedule(_tasks[0]._name);
+			}
+		}
+
+		/**
 		 * Returns array of jobs currently in the scheduler.
 		 * @return {array}
 		 */
