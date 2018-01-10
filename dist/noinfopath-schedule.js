@@ -4572,7 +4572,7 @@ module.exports = (function () {
 		this.run = function () {
 			var _now = moment(),
 				_target = moment("2017-01-01 " + schedule.time),
-				_margin = _now - (this._lastRun ? moment(this._lastRun) : moment()),
+				_margin = this._lastRun ? _now - moment(this._lastRun) : 0,
 				_isWeekday = schedule.weekday ? _now.format("dddd").toLowerCase() === schedule.weekday.toLowerCase() : true,
 				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute() && _isWeekday;
 
@@ -4598,7 +4598,7 @@ module.exports = (function () {
 				} else {
 					this.promise = null;
 					this.skipped = true;
-					this.message = '[NoAlarmTask] ' + _name + " not run";
+					this.message = '[NoAlarmTask] ' + this._name + " not run";
 				}
 			} else {
 				this.promise = null;
@@ -4788,7 +4788,7 @@ module.exports = (function () {
 				} else {
 					this.promise = null;
 					this.skipped = true;
-					this.message = '[NoCronTask] ' + _name + " not run, next check in " + _duration.humanize();
+					this.message = '[NoCronTask] ' + this._name + " not run, next check in " + _duration.humanize();
 				}
 			} else {
 				this.promise = null;
