@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 //! moment.js
-//! version : 2.19.3
+//! version : 2.20.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
 //! license : MIT
 //! momentjs.com
@@ -660,7 +660,7 @@ var matchTimestamp = /[+-]?\d+(\.\d{1,3})?/; // 123456789 123456789.123
 
 // any word (or two) characters or numbers including two/three word month in arabic.
 // includes scottish gaelic two word and hyphenated months
-var matchWord = /[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i;
+var matchWord = /[0-9]{0,256}['a-z\u00A0-\u05FF\u0700-\uD7FF\uF900-\uFDCF\uFDF0-\uFF07\uFF10-\uFFEF]{1,256}|[\u0600-\u06FF\/]{1,256}(\s*?[\u0600-\u06FF]{1,256}){1,2}/i;
 
 
 var regexes = {};
@@ -2030,7 +2030,7 @@ function currentDateArray(config) {
 // note: all values past the year are optional and will default to the lowest possible value.
 // [year, month, day , hour, minute, second, millisecond]
 function configFromArray (config) {
-    var i, date, input = [], currentDate, yearToUse;
+    var i, date, input = [], currentDate, expectedWeekday, yearToUse;
 
     if (config._d) {
         return;
@@ -2080,6 +2080,8 @@ function configFromArray (config) {
     }
 
     config._d = (config._useUTC ? createUTCDate : createDate).apply(null, input);
+    expectedWeekday = config._useUTC ? config._d.getUTCDay() : config._d.getDay();
+
     // Apply timezone offset from input. The actual utcOffset can be changed
     // with parseZone.
     if (config._tzm != null) {
@@ -2091,7 +2093,7 @@ function configFromArray (config) {
     }
 
     // check for mismatching day of week
-    if (config._w && typeof config._w.d !== 'undefined' && config._w.d !== config._d.getDay()) {
+    if (config._w && typeof config._w.d !== 'undefined' && config._w.d !== expectedWeekday) {
         getParsingFlags(config).weekdayMismatch = true;
     }
 }
@@ -3299,19 +3301,24 @@ function toString () {
     return this.clone().locale('en').format('ddd MMM DD YYYY HH:mm:ss [GMT]ZZ');
 }
 
-function toISOString() {
+function toISOString(keepOffset) {
     if (!this.isValid()) {
         return null;
     }
-    var m = this.clone().utc();
+    var utc = keepOffset !== true;
+    var m = utc ? this.clone().utc() : this;
     if (m.year() < 0 || m.year() > 9999) {
-        return formatMoment(m, 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
+        return formatMoment(m, utc ? 'YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]' : 'YYYYYY-MM-DD[T]HH:mm:ss.SSSZ');
     }
     if (isFunction(Date.prototype.toISOString)) {
         // native implementation is ~50x faster, use it when we can
-        return this.toDate().toISOString();
+        if (utc) {
+            return this.toDate().toISOString();
+        } else {
+            return new Date(this._d.valueOf()).toISOString().replace('Z', formatMoment(m, 'Z'));
+        }
     }
-    return formatMoment(m, 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]');
+    return formatMoment(m, utc ? 'YYYY-MM-DD[T]HH:mm:ss.SSS[Z]' : 'YYYY-MM-DD[T]HH:mm:ss.SSSZ');
 }
 
 /**
@@ -3667,7 +3674,7 @@ addRegexToken('Do', function (isStrict, locale) {
 
 addParseToken(['D', 'DD'], DATE);
 addParseToken('Do', function (input, array) {
-    array[DATE] = toInt(input.match(match1to2)[0], 10);
+    array[DATE] = toInt(input.match(match1to2)[0]);
 });
 
 // MOMENTS
@@ -4479,7 +4486,7 @@ addParseToken('x', function (input, array, config) {
 // Side effect imports
 
 
-hooks.version = '2.19.3';
+hooks.version = '2.20.1';
 
 setHookCallback(createLocal);
 
@@ -4511,6 +4518,19 @@ hooks.relativeTimeThreshold = getSetRelativeTimeThreshold;
 hooks.calendarFormat        = getCalendarFormat;
 hooks.prototype             = proto;
 
+// currently HTML5 input type only supports 24-hour formats
+hooks.HTML5_FMT = {
+    DATETIME_LOCAL: 'YYYY-MM-DDTHH:mm',             // <input type="datetime-local" />
+    DATETIME_LOCAL_SECONDS: 'YYYY-MM-DDTHH:mm:ss',  // <input type="datetime-local" step="1" />
+    DATETIME_LOCAL_MS: 'YYYY-MM-DDTHH:mm:ss.SSS',   // <input type="datetime-local" step="0.001" />
+    DATE: 'YYYY-MM-DD',                             // <input type="date" />
+    TIME: 'HH:mm',                                  // <input type="time" />
+    TIME_SECONDS: 'HH:mm:ss',                       // <input type="time" step="1" />
+    TIME_MS: 'HH:mm:ss.SSS',                        // <input type="time" step="0.001" />
+    WEEK: 'YYYY-[W]WW',                             // <input type="week" />
+    MONTH: 'YYYY-MM'                                // <input type="month" />
+};
+
 return hooks;
 
 })));
@@ -4521,7 +4541,7 @@ var moment = require("moment");
 module.exports = (function () {
 
 	function NoAlertJob(name, schedule, jobFn) {
-		if (typeof (schedule) !== "object") throw new Error("`schedule` is a required parameter");
+		if (typeof (schedule) !== "object") throw new Error("[NoAlarmTask] `schedule` is a required parameter");
 
 		function properties(obj) {
 			var out = {};
@@ -4557,7 +4577,7 @@ module.exports = (function () {
 				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute() && _isWeekday;
 
 			if (_alarm && !this._running && (_margin === 0 || _margin > 60000)) {
-				this.message = "Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
+				this.message = "[NoAlarmTask] Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
 				console.log(_margin, _now, this._running, this.message);
 
 				var r = this._jobFn();
@@ -4567,7 +4587,7 @@ module.exports = (function () {
 					this.promise = r.then(function () {
 							this._lastRun = moment(new Date()); //move this to after successful run.
 							this._running = false;
-							console.log("Ran " + this._name);
+							console.log("[NoAlarmTask] Ran " + this._name);
 						}.bind(this))
 						.catch(function (err) {
 							this._running = false;
@@ -4578,7 +4598,7 @@ module.exports = (function () {
 				} else {
 					this.promise = null;
 					this.skipped = true;
-					this.message = _name + " not run";
+					this.message = '[NoAlarmTask] ' + _name + " not run";
 				}
 			} else {
 				this.promise = null;
@@ -4612,15 +4632,50 @@ module.exports = (function () {
 
 
 			if (task instanceof NoCronTask)
-				console.log("Scheduled %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
+				console.log("[addSchedule] Scheduled as NoCronTask, %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
 			else
-				console.log("Scheduled %s to every day at %s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
+				console.log("[addSchedule] Scheduled as NoAlarmTask, %s to every day at %s%s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
 
 			_tasks.push(task);
 
 			// if(startNow) task.run();
 
 			return task;
+		}
+
+		/**
+		 * Removes job from the task scheduler.
+		 * It will remove all the jobs with the matching name.
+		 * @param {string} name Name of the job to remove.
+		 * @return {undefined}
+		 */
+		this.removeSchedule = function (name) {
+			_tasks = _tasks.filter(function (el) {
+				if (el._name == name) {
+					console.log('[index] Removing task %s', name);
+					if (el._running) {
+						console.log('[index] Notice: task we are removing is running at the moment.');
+					}
+				}
+				return el._name !== name;
+			});
+		}
+
+		/**
+		 * Removes all jobs from the schedule.
+		 */
+		this.removeAllSchedules = function () {
+			while (_tasks.length) {
+				this.removeSchedule(_tasks[0]._name);
+			}
+		}
+
+		/**
+		 * Returns array of jobs currently in the scheduler.
+		 * @return {array}
+		 */
+		this.getSchedules = function () {
+			return _tasks;
 		}
 
 		function _tick() {
@@ -4671,7 +4726,7 @@ var moment = require("moment");
 module.exports = (function () {
 
 	function NoCronJob(name, schedule, jobFn) {
-		if (typeof (schedule) !== "object") throw new Error("`schedule` is a required parameter");
+		if (typeof (schedule) !== "object") throw new Error("[NoCronTask] `schedule` is a required parameter");
 
 		function properties(obj) {
 			var out = {};
@@ -4712,7 +4767,7 @@ module.exports = (function () {
 			// };
 
 			if (diff >= this._duration && !this._running) {
-				this.message = "Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
+				this.message = "[NoCronTask] Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
 
 				var r = this._jobFn();
 				this._running = true;
@@ -4722,7 +4777,7 @@ module.exports = (function () {
 					this.promise = r.then(function () {
 							this._lastRun = moment(new Date()); //move this to after successful run.
 							this._running = false;
-							console.log("Ran " + this._name + ", next check in " + this._duration.humanize());
+							console.log("[NoCronTask] Ran " + this._name + ", next check in " + this._duration.humanize());
 						}.bind(this))
 						.catch(function (err) {
 							this._running = false;
@@ -4733,7 +4788,7 @@ module.exports = (function () {
 				} else {
 					this.promise = null;
 					this.skipped = true;
-					this.message = _name + " not run, next check in " + _duration.humanize();
+					this.message = '[NoCronTask] ' + _name + " not run, next check in " + _duration.humanize();
 				}
 			} else {
 				this.promise = null;
