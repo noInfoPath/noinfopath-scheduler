@@ -34,7 +34,8 @@ module.exports = (function () {
 		this.run = function () {
 			var _now = moment(),
 				_target = moment("2017-01-01 " + schedule.time),
-				_margin = this._lastRun ? _now - moment(this._lastRun) : 0,
+				// Note: _lastRun can be a future date, e.g. when the user adjusted the clock of the device. 
+				_margin = (this._lastRun && this._lastRun < _now) ? _now - moment(this._lastRun) : 0,
 				_isWeekday = schedule.weekday ? _now.format("dddd").toLowerCase() === schedule.weekday.toLowerCase() : true,
 				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute() && _isWeekday;
 

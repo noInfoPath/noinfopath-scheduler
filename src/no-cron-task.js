@@ -32,7 +32,9 @@ module.exports = (function () {
 		this.reset();
 
 		this.run = function () {
-			var diff = this._lastRun ? Date.now() - this._lastRun.valueOf() : this._durationMilliseconds;
+			var _now = moment();
+			// Note: _lastRun can be a future date, e.g. when the user adjusted the clock of the device. 
+			var diff = (this._lastRun && this._lastRun < _now) ? _now - this._lastRun : this._durationMilliseconds;
 			// var result = {
 			// 	skipped: false,
 			// 	promise: null,
