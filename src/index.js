@@ -13,6 +13,10 @@ module.exports = (function () {
 				task = isAlarm ? new NoAlarmTask(name, schedule, jobFn) : new NoCronTask(name, schedule, jobFn);
 			} else if (typeof (name) === "object" && typeof (schedule) === "function") {
 				task = name.type === "alarm" ? new NoAlarmTask(name.name, name.schedule, schedule) : new NoCronTask(name.name, name.schedule, schedule);
+			} else if (typeof (name) === "object" ) {
+				task = name.job.type === "alarm" ? new NoAlarmTask(name.job.name, name.job.schedule, name.fn) : new NoCronTask(name.job.name, name.job.schedule, name.fn);
+			} else { 
+				throw new TypeError("addSchedule: Invalid parameters. `name` is a required parameter, and must be a String or Object.");
 			}
 
 
