@@ -34,10 +34,15 @@ module.exports = (function () {
 		this.run = function () {
 			var _now = moment(),
 				_target = moment("2017-01-01 " + schedule.time),
-				// Note: _lastRun can be a future date, e.g. when the user adjusted the clock of the device. 
+				// Note: _lastRun can be a future date, e.g. when the user adjusted the clock of the device.
 				_margin = (this._lastRun && this._lastRun < _now) ? _now - moment(this._lastRun) : 0,
+				//_margin = _now - (this._lastRun ? moment(this._lastRun) : moment()),
 				_isWeekday = schedule.weekday ? _now.format("dddd").toLowerCase() === schedule.weekday.toLowerCase() : true,
 				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute() && _isWeekday;
+
+			if (Math.abs(_margin) < 999) _margin = 0;
+
+			//if (_alarm) console.log("Alarm Check: last run %s target %s margin: %s isAlarm: %s isRunning: %s", this._lastRun, _target.toString(), _margin, _alarm, this._running);
 
 			if (_alarm && !this._running && (_margin === 0 || _margin > 60000)) {
 				this.message = "[NoAlarmTask] Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
@@ -50,7 +55,7 @@ module.exports = (function () {
 					this.promise = r.then(function () {
 							this._lastRun = moment(new Date()); //move this to after successful run.
 							this._running = false;
-							console.log("[NoAlarmTask] Ran " + this._name);
+							console.log("[NoAlarmTask] Ran %s %s", this._name, this._lastRun.toString());
 						}.bind(this))
 						.catch(function (err) {
 							this._running = false;
