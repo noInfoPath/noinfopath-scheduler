@@ -4,6 +4,9 @@ constructor function that creates objects of alarm-type tasks(tasks that are run
 function to create task objects, it is not meant to be used by users directly
 
 **Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
 |name|string|the name used to refer to this task|
 |schedule|object|an object containing information specifying when exactly to run this task|
 |jobFn|function|the function that is called when this task is run|
@@ -16,6 +19,9 @@ None
 Contructor function exported by no-cron-task.js. Creates an object that represents a task that is scheduled to run at regular intervals(as opposed to a specific day/time).
 
 **Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
 |obj|Object|the object whose properties will be copied|
 
 **Returns**
@@ -50,6 +56,9 @@ None
 The actual task runner. Handles adding, removing, maintaining, and running no-cron and alarm tasks.
 
 **Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
 |name|String|The name that will be used to refer to the task represented by the instance of the NoCronJob object|
 
 **Returns**
@@ -61,18 +70,28 @@ None
 
 adds a task to the NoCron task runner. Calls the constructor for an alarm or no-cron task to create a new task, and adds it to the task array so it will be checked on each 'tick'
 
-**Parameters>**
+**Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
 |name|String|the name used to refer to the task|
 |schedule|Object|an object containing information on when/how often to run the task|
 |jobFn|function|The actual function to be called when the task is ran|
 |isAlarm|boolean|a flag to determine whether the task to be created is an alarm task(true) or no-cron task(false)|
 
 **Parameters<alternate #1>**
+
+|Name|Type|Description|
+|----|----|-----------|
 |name|object|an object containing the name and schedule information for a task|
 |schedule|function|the function to be called when the task is ran|
 
 **Parameters<alternate #2>**
+
+|Name|Type|Description|
+|----|----|-----------|
 |name|object|an object containing the name, schedule information, and callback function for a task|
+
 **Returns**
 Object - the newly created task object
 
@@ -82,6 +101,9 @@ Object - the newly created task object
 removes a job from the task runner
 
 **Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
 |name|string|the name of the job to be removed|
 
 **Returns**
@@ -144,7 +166,9 @@ Contructor function exported by no-cron-task.js. Creates an object that represen
 This function is called by the NoCron module to create new tasks and add them to the scheduler, users are not meant to use this constructor to create task objects directly.
 
 **Parameters**
+
 |Name|Type|Description|
+|----|----|-----------|
 |name|String|The name that will be used to refer to the task represented by the instance of the NoCronJob object|
 |schedule|Object||
 **Returns**
@@ -165,6 +189,9 @@ Returns a promise that resolves an object containing a list of booleans that ind
 Contructor function exported by no-cron-task.js. Creates an object that represents a task that is scheduled to run at regular intervals(as opposed to a specific day/time).
 
 **Parameters**
+
+|Name|Type|Description|
+|----|----|-----------|
 |obj|Object|the object whose properties will be copied|
 
 **Returns**
