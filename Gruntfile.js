@@ -20,11 +20,11 @@ module.exports = function (grunt) {
 		nodocs: {
 			js: {
 				options: {
-					src: 'src/js/**/*.js',
-					//dest: 'docs/dtcs.md',
+					src: 'src/**/*.js',
+					dest: './documentation.md',
 					start: ['/*', '/**'],
 					multiDocs: {
-						multiFiles: true,
+						multiFiles: false,
 						dest: "wiki/"
 					}
 				}
