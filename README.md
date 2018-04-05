@@ -12,7 +12,7 @@ JavaScript alternative to scheduling tasks with CRON syntax.  Instead uses momen
 
 ## Usage
 
-For more details see the [documentation] (https://github.com/noInfoPath/noinfopath-scheduler/blob/master/documentation.md) page.
+For more details see the [documentation](https://github.com/noInfoPath/noinfopath-scheduler/blob/master/documentation.md) page.
 
 ```JavaScript
 
