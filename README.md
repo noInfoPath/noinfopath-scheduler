@@ -16,6 +16,10 @@ For more details see the [documentation] (https://github.com/noInfoPath/noinfopa
 
 ```JavaScript
 
+function doDoSomething() {}
+
+function doDoSomthingElse() {}
+
 var scheduler = require("noinfopath-scheduler"),
 	alarmTask = {
 		"job": {
@@ -26,7 +30,7 @@ var scheduler = require("noinfopath-scheduler"),
 				"time": "22:30"
 			}
 		},
-		"fn": function {}
+		"fn": doDoSomething
 	},
 	intervalTask = {
 		"job": {
@@ -36,7 +40,7 @@ var scheduler = require("noinfopath-scheduler"),
 				"duration": "4"
 			}
 		},
-		"fn": function {}
+		"fn": doDoSomthingElse
 	};
 
 scheduler.addSchedule(alarmTask);
