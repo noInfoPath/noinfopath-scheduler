@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
 //! moment.js
 //! version : 2.20.1
 //! authors : Tim Wood, Iskren Chernev, Moment.js contributors
@@ -4539,10 +4539,38 @@ return hooks;
 var moment = require("moment");
 
 module.exports = (function () {
-
+	/**
+	 * ### NoAlertJob
+	 *
+	 * constructor function that creates objects of alarm-type tasks(tasks that are run at a certain day/time, as opposed to at regular intervals). The task runner uses this
+	 * function to create task objects, it is not meant to be used by users directly
+	 *
+	 * **Parameters**
+	 * |name|string|the name used to refer to this task|
+	 * |schedule|object|an object containing information specifying when exactly to run this task|
+	 * |jobFn|function|the function that is called when this task is run|
+	 *
+	 * **Returns**
+	 * None
+	 */
 	function NoAlertJob(name, schedule, jobFn) {
 		if (typeof (schedule) !== "object") throw new Error("[NoAlarmTask] `schedule` is a required parameter");
 
+
+		/**
+		 * ### properties
+		 *
+		 * Contructor function exported by no-cron-task.js. Creates an object that represents a task that is scheduled to run at regular intervals(as opposed to a specific day/time).
+		 *
+		 * **Parameters**
+		 * |obj|Object|the object whose properties will be copied|
+		 *
+		 * **Returns**
+		 * Type: Object
+		 *
+		 * Returns an object with the same properties and values as the object passed in as a parameter
+		 *
+		 */
 		function properties(obj) {
 			var out = {};
 			Object.keys(obj).forEach(function (k) {
@@ -4552,6 +4580,18 @@ module.exports = (function () {
 			return out;
 		}
 
+
+		/**
+		 * ### reset
+		 *
+		 * resets the NoCronJob's properties to defaults, creates them and sets their values to default if they don't already exist.
+		 *
+		 * **Parameters**
+		 * None
+		 *
+		 * **Returns**
+		 * None
+		 */
 		this.reset = function () {
 			this.promise = null;
 			this.skipped = true;
@@ -4569,13 +4609,31 @@ module.exports = (function () {
 
 		this.reset();
 
+
+		/**
+		 * ### run
+		 *
+		 * called by the task runner on each 'tick' - checks if it is time for this task to be run yet, if so it executes the jobFn. if not(or if it is a parallel task), 
+		 * it sets skipped to true.
+		 *
+		 * **Parameters**
+		 * None
+		 *
+		 * **Returns**
+		 * None
+		 */
 		this.run = function () {
 			var _now = moment(),
 				_target = moment("2017-01-01 " + schedule.time),
-				// Note: _lastRun can be a future date, e.g. when the user adjusted the clock of the device. 
+				// Note: _lastRun can be a future date, e.g. when the user adjusted the clock of the device.
 				_margin = (this._lastRun && this._lastRun < _now) ? _now - moment(this._lastRun) : 0,
+				//_margin = _now - (this._lastRun ? moment(this._lastRun) : moment()),
 				_isWeekday = schedule.weekday ? _now.format("dddd").toLowerCase() === schedule.weekday.toLowerCase() : true,
 				_alarm = _now.hour() === _target.hour() && _now.minute() === _target.minute() && _isWeekday;
+
+			if (Math.abs(_margin) < 999) _margin = 0;
+
+			//if (_alarm) console.log("Alarm Check: last run %s target %s margin: %s isAlarm: %s isRunning: %s", this._lastRun, _target.toString(), _margin, _alarm, this._running);
 
 			if (_alarm && !this._running && (_margin === 0 || _margin > 60000)) {
 				this.message = "[NoAlarmTask] Starting " + this._name + ", last run " + (this._lastRun ? moment(this._lastRun).toString() : "never");
@@ -4588,7 +4646,7 @@ module.exports = (function () {
 					this.promise = r.then(function () {
 							this._lastRun = moment(new Date()); //move this to after successful run.
 							this._running = false;
-							console.log("[NoAlarmTask] Ran " + this._name);
+							console.log("[NoAlarmTask] Ran %s %s", this._name, this._lastRun.toString());
 						}.bind(this))
 						.catch(function (err) {
 							this._running = false;
@@ -4618,10 +4676,46 @@ var NoCronTask = require("./no-cron-task"),
 	NoAlarmTask = require("./alarm");
 
 module.exports = (function () {
+
+	/**
+	 * ### NoCron
+	 *
+	 * The actual task runner. Handles adding, removing, maintaining, and running no-cron and alarm tasks.
+	 *
+	 * **Parameters**
+	 * |name|String|The name that will be used to refer to the task represented by the instance of the NoCronJob object|
+	 *
+	 * **Returns**
+	 *
+	 * Type: Promise <Object>
+	 * None
+	 */
 	function NoCron() {
 		var _tasks = [],
 			_timeout;
 
+		/**
+		 * ### addSchedule
+		 *
+		 * adds a task to the NoCron task runner. Calls the constructor for an alarm or no-cron task to create a new task, and adds it to the task array so it will be checked on each 'tick'
+		 *
+		 * **Parameters>**
+		 * |name|String|the name used to refer to the task|
+		 * |schedule|Object|an object containing information on when/how often to run the task|
+		 * |jobFn|function|The actual function to be called when the task is ran|
+		 * |isAlarm|boolean|a flag to determine whether the task to be created is an alarm task(true) or no-cron task(false)|
+		 *
+		 * **Parameters<alternate #1>**
+		 * |name|object|an object containing the name and schedule information for a task|
+		 * |schedule|function|the function to be called when the task is ran|
+		 *
+		 * **Parameters<alternate #2>**
+		 * |name|object|an object containing the name, schedule information, and callback function for a task|
+
+		 * **Returns**
+		 * Object - the newly created task object
+		 *
+		 */
 		this.addSchedule = function _newTask(name, schedule, jobFn, isAlarm) {
 			var task;
 
@@ -4629,13 +4723,19 @@ module.exports = (function () {
 				task = isAlarm ? new NoAlarmTask(name, schedule, jobFn) : new NoCronTask(name, schedule, jobFn);
 			} else if (typeof (name) === "object" && typeof (schedule) === "function") {
 				task = name.type === "alarm" ? new NoAlarmTask(name.name, name.schedule, schedule) : new NoCronTask(name.name, name.schedule, schedule);
+			} else if (typeof (name) === "object") {
+				task = name.job.type === "alarm" ? new NoAlarmTask(name.job.name, name.job.schedule, name.fn) : new NoCronTask(name.job.name, name.job.schedule, name.fn);
+			} else {
+				throw new TypeError("addSchedule: Invalid parameters. `name` is a required parameter, and must be a String or Object.");
 			}
 
-
-			if (task instanceof NoCronTask)
-				console.log("[addSchedule] Scheduled as NoCronTask, %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
-			else
-				console.log("[addSchedule] Scheduled as NoAlarmTask, %s to every day at %s%s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
+			// console.log("[NoCron::debug] Mode=%s", this.debug);
+			if (this._debug) {
+				if (task instanceof NoCronTask)
+					console.log("[addSchedule] Scheduled as NoCronTask, %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
+				else
+					console.log("[addSchedule] Scheduled as NoAlarmTask, %s to every day at %s%s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
+			}
 
 			_tasks.push(task);
 
@@ -4644,11 +4744,18 @@ module.exports = (function () {
 			return task;
 		}
 
+
 		/**
-		 * Removes job from the task scheduler.
-		 * It will remove all the jobs with the matching name.
-		 * @param {string} name Name of the job to remove.
-		 * @return {undefined}
+		 * ### removeSchedule
+		 *
+		 * removes a job from the task runner
+		 *
+		 * **Parameters**
+		 * |name|string|the name of the job to be removed|
+		 *
+		 * **Returns**
+		 *
+		 * Object - The removed task object
 		 */
 		this.removeSchedule = function (name) {
 			_tasks = _tasks.filter(function (el) {
@@ -4662,8 +4769,17 @@ module.exports = (function () {
 			});
 		}
 
+
 		/**
-		 * Removes all jobs from the schedule.
+		 * ### removeAllSchedules
+		 *
+		 * removes all jobs from the task runner
+		 *
+		 * **Parameters**
+		 * None
+		 *
+		 * **Returns**
+		 * None
 		 */
 		this.removeAllSchedules = function () {
 			while (_tasks.length) {
@@ -4672,13 +4788,32 @@ module.exports = (function () {
 		}
 
 		/**
-		 * Returns array of jobs currently in the scheduler.
-		 * @return {array}
+		 * ### getSchedules
+		 *
+		 * returns the array of tasks currently in the task runner
+		 *
+		 * **Parameters**
+		 * None
+		 *
+		 * **Returns**
+		 * Array - the array of all tasks currently scheduled
 		 */
 		this.getSchedules = function () {
 			return _tasks;
 		}
 
+
+		/**
+		 * ### _tick
+		 *
+		 * calls run on every task, which will run all tasks that are due to be executed. resets _timeout to call this function again in 1000s so that it can continue periodically checking all tasks and running them
+		 *
+		 * **Parameters**
+		 * None
+		 *
+		 * **Returns**
+		 * None
+		 */
 		function _tick() {
 			var promises = _tasks.map(function (task) {
 				task.run();
@@ -4703,13 +4838,55 @@ module.exports = (function () {
 				});
 		}
 
+
+		/**
+		 * ### start
+		 *
+		 * tells _timeout to call _tick in 1 second, which will begin a loop where tick is called every second, effectively starting the task runner
+		 *
+		 * **Parameters**
+		 * None
+		 *
+		 * **Returns**
+		 * None
+		 */
 		function _start() {
 			_timeout = setTimeout(_tick, 1000);
 		}
 
+		/**
+		 * ### stop
+		 *
+		 * clears _timeout, preventing _tick from being called again and stopping the task runner.
+		 *
+		 * **Parameters**
+		 * None
+		 *
+		 * **Returns**
+		 * None
+		 */
 		function _stop() {
 			clearTimeout(_timeout);
 		}
+
+		/**
+		 * ### debug
+		 *
+		 * Property that enables or disables debug output.
+		 *
+		 * **Returns**
+		 * bool
+		 */
+		this._debug = false;
+		Object.defineProperty(this, "debug", {
+			get: function () {
+				return this._debug;
+			},
+			set: function (v) {
+				this._debug = v;
+			}
+		});
+
 
 		this.start = _start;
 		this.stop = _stop;
@@ -4726,9 +4903,47 @@ var moment = require("moment");
 
 module.exports = (function () {
 
+	/**
+	 * ### NoCronJob
+	 *
+	 * Contructor function exported by no-cron-task.js. Creates an object that represents a task that is scheduled to run at regular intervals(as opposed to a specific day/time).
+	 * This function is called by the NoCron module to create new tasks and add them to the scheduler, users are not meant to use this constructor to create task objects directly.
+	 *
+	 * **Parameters**
+	 * |Name|Type|Description|
+	 * |name|String|The name that will be used to refer to the task represented by the instance of the NoCronJob object|
+	 * |schedule|Object||
+	 * **Returns**
+	 *
+	 * Type: Promise <Object>
+	 *
+	 * Returns a promise that resolves an object containing a list of booleans that indicate whether monitoring is disabled for each target
+	 *	 {
+	 *	     "fan": true,
+	 *	     "signal": true,
+	 *	     "lamp": true,
+	 *	     "screen": true,
+	 *	     "temperature": true
+	 *	 }
+	 */
 	function NoCronJob(name, schedule, jobFn) {
 		if (typeof (schedule) !== "object") throw new Error("[NoCronTask] `schedule` is a required parameter");
 
+
+		/**
+		 * ### properties
+		 *
+		 * Contructor function exported by no-cron-task.js. Creates an object that represents a task that is scheduled to run at regular intervals(as opposed to a specific day/time).
+		 *
+		 * **Parameters**
+		 * |obj|Object|the object whose properties will be copied|
+		 *
+		 * **Returns**
+		 * Type: Object
+		 *
+		 * Returns an object with the same properties and values as the object passed in as a parameter
+		 *
+		 */
 		function properties(obj) {
 			var out = {};
 			Object.keys(obj).forEach(function (k) {
@@ -4738,6 +4953,18 @@ module.exports = (function () {
 			return out;
 		}
 
+
+		/**
+		 * ### reset
+		 *
+		 * resets the NoCronJob's properties to defaults, creates them and sets their values to default if they don't already exist.
+		 *
+		 * **Parameters**
+		 * None
+		 *
+		 * **Returns**
+		 * None
+		 */
 		this.reset = function () {
 			this.promise = null;
 			this.skipped = true;
@@ -4755,9 +4982,23 @@ module.exports = (function () {
 
 		this.reset();
 
+
+
+
+		/**
+		 * ### run
+		 *
+		 * Called on each 'tick' of the task runner. Checks if this task is due to run yet, if so it executes _jobFn() and resets its timer, if not(or if it is a parallel task) it sets skipped to true
+		 *
+		 * **Parameters**
+		 * None
+		 *
+		 * **Returns**
+		 * None
+		 */
 		this.run = function () {
 			var _now = moment();
-			// Note: _lastRun can be a future date, e.g. when the user adjusted the clock of the device. 
+			// Note: _lastRun can be a future date, e.g. when the user adjusted the clock of the device.
 			var diff = (this._lastRun && this._lastRun < _now) ? _now - this._lastRun : this._durationMilliseconds;
 			// var result = {
 			// 	skipped: false,

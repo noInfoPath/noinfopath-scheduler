@@ -93,7 +93,7 @@ var _24HOURS = 1000 * 60 * 60 * 24,
 	},
 	job;
 
-noCron.debug = false;
+noCron.debug = true;
 
 function _pad(val, len, c) {
 	var tmp = c.repeat(len) + String(val),
