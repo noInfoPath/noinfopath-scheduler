@@ -55,11 +55,13 @@ module.exports = (function () {
 				throw new TypeError("addSchedule: Invalid parameters. `name` is a required parameter, and must be a String or Object.");
 			}
 
-
-			if (task instanceof NoCronTask)
-				console.log("[addSchedule] Scheduled as NoCronTask, %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
-			else
-				console.log("[addSchedule] Scheduled as NoAlarmTask, %s to every day at %s%s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
+			// console.log("[NoCron::debug] Mode=%s", this.debug);
+			if (this._debug) {
+				if (task instanceof NoCronTask)
+					console.log("[addSchedule] Scheduled as NoCronTask, %s to run every %s%s", task._name, task._schedule.duration, task._schedule.unit);
+				else
+					console.log("[addSchedule] Scheduled as NoAlarmTask, %s to every day at %s%s", task._name, (task._schedule.weekday ? task._schedule.weekday + " at " : ""), task._schedule.time);
+			}
 
 			_tasks.push(task);
 
@@ -192,6 +194,25 @@ module.exports = (function () {
 		function _stop() {
 			clearTimeout(_timeout);
 		}
+
+		/**
+		 * ### debug
+		 *
+		 * Property that enables or disables debug output.
+		 *
+		 * **Returns**
+		 * bool
+		 */
+		this._debug = false;
+		Object.defineProperty(this, "debug", {
+			get: function () {
+				return this._debug;
+			},
+			set: function (v) {
+				this._debug = v;
+			}
+		});
+
 
 		this.start = _start;
 		this.stop = _stop;
