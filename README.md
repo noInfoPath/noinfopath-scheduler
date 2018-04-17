@@ -4,7 +4,7 @@
 
 ## Overview
 
-JavaScript alternative to scheduling tasks with CRON syntax.  Instead uses moment duration syntax to define events. Also support specifying specific times of day.
+JavaScript task scheduler that uses MomentJs duration syntax to define events. Also support specifying specific times of day.
 
 ## Installation
 
