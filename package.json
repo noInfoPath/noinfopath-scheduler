@@ -1,6 +1,6 @@
 {
   "name": "noinfopath-scheduler",
-  "version": "1.1.9",
+  "version": "1.1.10",
   "main": "src/index.js",
   "dependencies": {
     "bluebird": "^3.5.1",
