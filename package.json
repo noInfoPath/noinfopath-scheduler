@@ -1,6 +1,6 @@
 {
   "name": "noinfopath-scheduler",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "main": "src/index.js",
   "dependencies": {
     "bluebird": "^3.5.1",
@@ -31,5 +31,6 @@
     "url": "https://github.com/noInfoPath/noinfopath-scheduler/issues"
   },
   "homepage": "https://github.com/noInfoPath/noinfopath-scheduler#readme",
-  "description": ""
+  "description": "JavaScript task scheduler that uses MomentJs duration syntax to define events. Also support specifying specific times of day.",
+  "keywords": "scheduler, cron, tasks, jobs"
 }
