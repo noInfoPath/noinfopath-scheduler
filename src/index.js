@@ -86,9 +86,10 @@ module.exports = (function () {
 		this.removeSchedule = function (name) {
 			_tasks = _tasks.filter(function (el) {
 				if (el._name == name) {
-					console.log('[index] Removing task %s', name);
+					if (this.debug) console.log('[noinfopath-scheduler::removeSchedule] Removing task %s', name);
+
 					if (el._running) {
-						console.log('[index] Notice: task we are removing is running at the moment.');
+						console.log('[noinfopath-scheduler::removeSchedule] Notice: task we are removing is running at the moment.');
 					}
 				}
 				return el._name !== name;
