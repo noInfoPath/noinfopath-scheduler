@@ -4,11 +4,14 @@ var NoCronTask = require("./no-cron-task"),
 module.exports = (function () {
 
 	/**
-	 * ### NoCron
+	 * ## NoCron
 	 *
 	 * The actual task runner. Handles adding, removing, maintaining, and running no-cron and alarm tasks.
 	 *
 	 * **Parameters**
+	 *
+	 * |Name|Type|Description|
+	 * |----|----|-----------|
 	 * |name|String|The name that will be used to refer to the task represented by the instance of the NoCronJob object|
 	 *
 	 * **Returns**
@@ -26,16 +29,25 @@ module.exports = (function () {
 		 * adds a task to the NoCron task runner. Calls the constructor for an alarm or no-cron task to create a new task, and adds it to the task array so it will be checked on each 'tick'
 		 *
 		 * **Parameters>**
+		 *
+		 * |Name|Type|Description|
+		 * |----|----|-----------|
 		 * |name|String|the name used to refer to the task|
 		 * |schedule|Object|an object containing information on when/how often to run the task|
 		 * |jobFn|function|The actual function to be called when the task is ran|
 		 * |isAlarm|boolean|a flag to determine whether the task to be created is an alarm task(true) or no-cron task(false)|
 		 *
 		 * **Parameters<alternate #1>**
+		 *
+		 * |Name|Type|Description|
+		 * |----|----|-----------|
 		 * |name|object|an object containing the name and schedule information for a task|
 		 * |schedule|function|the function to be called when the task is ran|
 		 *
 		 * **Parameters<alternate #2>**
+		 *
+		 * |Name|Type|Description|
+		 * |----|----|-----------|
 		 * |name|object|an object containing the name, schedule information, and callback function for a task|
 
 		 * **Returns**
@@ -77,6 +89,9 @@ module.exports = (function () {
 		 * removes a job from the task runner
 		 *
 		 * **Parameters**
+		 *
+		 * |Name|Type|Description|
+		 * |----|----|-----------|
 		 * |name|string|the name of the job to be removed|
 		 *
 		 * **Returns**
@@ -130,7 +145,7 @@ module.exports = (function () {
 		}
 
 
-		/**
+		/*
 		 * ### _tick
 		 *
 		 * calls run on every task, which will run all tasks that are due to be executed. resets _timeout to call this function again in 1000s so that it can continue periodically checking all tasks and running them
@@ -169,22 +184,26 @@ module.exports = (function () {
 		/**
 		 * ### start
 		 *
-		 * tells _timeout to call _tick in 1 second, which will begin a loop where tick is called every second, effectively starting the task runner
+		 * Starts the scheduler. It check for task/jobs every second by default.
+		 * Schedule resolution is to the minute when using alarm tasks.
 		 *
 		 * **Parameters**
-		 * None
+		 *
+		 * |Name|Type|Description|
+		 * |----|----|-----------|
+		 * |resolution|Integer|(Optional) The number of milliseconds to wait between checks for running tasks|
 		 *
 		 * **Returns**
 		 * None
 		 */
-		function _start() {
-			_timeout = setTimeout(_tick, 1000);
+		function _start(resolution) {
+			_timeout = setTimeout(_tick, resolution || 1000);
 		}
 
 		/**
 		 * ### stop
 		 *
-		 * clears _timeout, preventing _tick from being called again and stopping the task runner.
+		 * Stopping the scheduler from runnng. No scheduled tasks/jobs will be run.
 		 *
 		 * **Parameters**
 		 * None

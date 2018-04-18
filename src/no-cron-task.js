@@ -3,27 +3,23 @@ var moment = require("moment");
 module.exports = (function () {
 
 	/**
-	 * ### NoCronJob
+	 * ## NoCronJob
 	 *
-	 * Contructor function exported by no-cron-task.js. Creates an object that represents a task that is scheduled to run at regular intervals(as opposed to a specific day/time).
+	 * Creates an object that represents a task that is scheduled to run at regular intervals (as opposed to a specific day/time).
 	 * This function is called by the NoCron module to create new tasks and add them to the scheduler, users are not meant to use this constructor to create task objects directly.
 	 *
 	 * **Parameters**
+	 *
 	 * |Name|Type|Description|
+	 * |----|----|-----------|
 	 * |name|String|The name that will be used to refer to the task represented by the instance of the NoCronJob object|
-	 * |schedule|Object||
+	 * |schedule|Object|TODO: Document this.|
+	 *
 	 * **Returns**
 	 *
 	 * Type: Promise <Object>
 	 *
 	 * Returns a promise that resolves an object containing a list of booleans that indicate whether monitoring is disabled for each target
-	 *	 {
-	 *	     "fan": true,
-	 *	     "signal": true,
-	 *	     "lamp": true,
-	 *	     "screen": true,
-	 *	     "temperature": true
-	 *	 }
 	 */
 	function NoCronJob(name, schedule, jobFn) {
 		if (typeof (schedule) !== "object") throw new Error("[NoCronTask] `schedule` is a required parameter");
@@ -35,6 +31,9 @@ module.exports = (function () {
 		 * Contructor function exported by no-cron-task.js. Creates an object that represents a task that is scheduled to run at regular intervals(as opposed to a specific day/time).
 		 *
 		 * **Parameters**
+		 *
+		 * |Name|Type|Description|
+		 * |----|----|-----------|
 		 * |obj|Object|the object whose properties will be copied|
 		 *
 		 * **Returns**
@@ -87,7 +86,7 @@ module.exports = (function () {
 		/**
 		 * ### run
 		 *
-		 * Called on each 'tick' of the task runner. Checks if this task is due to run yet, if so it executes _jobFn() and resets its timer, if not(or if it is a parallel task) it sets skipped to true
+		 * Called on each 'tick' of the task runner. Checks if this task is due to run yet, if so it executes resets its timer, if not (or if it is a parallel task) it sets skipped to true
 		 *
 		 * **Parameters**
 		 * None

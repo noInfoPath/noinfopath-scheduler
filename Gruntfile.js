@@ -8,21 +8,21 @@ module.exports = function (grunt) {
 		copy: {
 			index: {
 				files: [{
-						expand: true,
-						flatten: true,
-						isFile: true,
-						cwd: ".",
-						src: ["dist/noinfopath-schedule.min.js"],
-						dest: "./index.js"
-					}]
+					expand: true,
+					flatten: true,
+					isFile: true,
+					cwd: ".",
+					src: ["dist/noinfopath-schedule.min.js"],
+					dest: "./index.js"
+				}]
 			}
 		},
 		nodocs: {
 			js: {
 				options: {
-					src: 'src/**/*.js',
+					src: ['src/index.js', 'src/no-cron-task.js', 'alarm.js'],
 					dest: './documentation.md',
-					start: ['/*', '/**'],
+					start: ['/**'],
 					multiDocs: {
 						multiFiles: false,
 						dest: "wiki/"
@@ -63,6 +63,6 @@ module.exports = function (grunt) {
 	//Default task(s).
 	// grunt.registerTask('build', ['bumpup', 'version', 'nodocs:internal', 'concat:readme']);
 	// grunt.registerTask('release', ['bumpup', 'version', 'nodocs:internal', 'concat:readme']);
-	grunt.registerTask('compile', ['browserify','uglify:dist']);
+	grunt.registerTask('compile', ['browserify', 'uglify:dist']);
 
 };
