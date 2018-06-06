@@ -36,8 +36,8 @@ var scheduler = require("noinfopath-scheduler"),
 		"job": {
 			"name": "My Task that does something else",
 			"schedule": {
-				"interval": "h",
-				"duration": "4"
+				"unit": "h",
+				"duration": 4
 			}
 		},
 		"fn": doDoSomthingElse
